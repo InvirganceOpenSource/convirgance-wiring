@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<object class="com.test.TestBean">
+    <string>Hello world!</string>
+    <primitiveInt>12</primitiveInt>
+    <primitiveLong>1337</primitiveLong>
+    <primitiveBoolean>true</primitiveBoolean>
+    <primitiveFloat>12.3</primitiveFloat>
+    <primitiveDouble>13.37</primitiveDouble>
+    <objectInteger>12</objectInteger>
+    <objectLong>1337</objectLong>
+    <objectBoolean>true</objectBoolean>
+    <objectFloat>12.3</objectFloat>
+    <objectDouble>13.37</objectDouble>
+    <list>
+        <list>
+            <string id="one">One</string>
+            <string>Two</string>
+            <string>Three</string>
+        </list>
+    </list>
+    <map>
+        <map>
+            <entry>
+                <string>One</string>
+                <integer>1</integer>
+            </entry>
+            <entry>
+                <string>Two</string>
+                <integer>2</integer>
+            </entry>
+            <entry>
+                <string>Three</string>
+                <integer>3</integer>
+            </entry>
+        </map>
+    </map>
+    <object>
+        <object class="com.test.TestBean">
+            <string id="goodbye">
+                <![CDATA[Goodbye]]>, <![CDATA[Cruel World!]]>
+            </string>
+        </object>
+    </object>
+</object>

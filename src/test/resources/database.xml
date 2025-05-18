@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<object class="com.invirgance.convirgance.web.service.SelectService">
+    <parameters>
+        <list>
+            <object class="com.invirgance.convirgance.web.parameter.RequestParameter">
+                <name>zipcode</name>
+                <defaultValue></defaultValue>
+            </object>
+            <object class="com.invirgance.convirgance.web.parameter.RequestParameter">
+                <name>state</name>
+                <defaultValue></defaultValue>
+            </object>
+            <object class="com.invirgance.convirgance.web.parameter.RequestParameter">
+                <name>discountCode</name>
+                <defaultValue>
+                    <null/>
+                </defaultValue>
+            </object>
+        </list>
+    </parameters>
+    <binding>
+        <object class="com.invirgance.convirgance.web.binding.QueryBinding">
+            <jndiName>jdbc/sample</jndiName>
+            <sql>
+                <![CDATA[
+                    select * from APP.CUSTOMER
+                    where (:zipcode = '' or ZIP = :zipcode)
+                    and (:state = '' or STATE = :state)
+                    and (:discountCode = '' or DISCOUNT_CODE = :discountCode)
+                ]]>
+            </sql>
+        </object>
+    </binding>
+    <output>
+        <object class="com.invirgance.convirgance.output.JSONOutput" />
+    </output>
+</object>
