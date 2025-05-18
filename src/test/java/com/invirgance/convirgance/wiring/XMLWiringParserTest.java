@@ -61,15 +61,40 @@ public class XMLWiringParserTest
         assertEquals(JSONOutput.class, object.getOutput().getClass());
     }
     
-    
     @Test
     public void testBeanParse()
     {
         var parser = new XMLWiringParser(new ClasspathSource("/bean.xml"));
         var object = (TestBean)parser.getRoot();
         
-        System.out.println(object);
-        System.out.println("Hello: " + parser.get("one"));
-        System.out.println("Goodbye: " + parser.get("goodbye"));
+        assertEquals("Hello world!", object.getString());
+        assertEquals(12, object.getPrimitiveInt());
+        assertEquals(1337l, object.getPrimitiveLong());
+        assertTrue(object.isPrimitiveBoolean());
+        assertEquals(12.3f, object.getPrimitiveFloat());
+        assertEquals(13.37, object.getPrimitiveDouble());
+        
+        assertEquals(12, object.getObjectInteger());
+        assertEquals(1337l, object.getObjectLong());
+        assertTrue(object.getObjectBoolean());
+        assertEquals(12.3f, object.getObjectFloat());
+        assertEquals(13.37, object.getObjectDouble());
+        
+        assertEquals(3, object.getList().size());
+        assertEquals("One", object.getList().get(0));
+        assertEquals("Two", object.getList().get(1));
+        assertEquals("Three", object.getList().get(2));
+        
+        assertEquals(3, object.getMap().size());
+        assertEquals(1, object.getMap().get("One"));
+        assertEquals(2, object.getMap().get("Two"));
+        assertEquals(3, object.getMap().get("Three"));
+        
+        assertNotNull(object.getObject());
+        assertEquals("Goodbye, Cruel World!", object.getObject().getString());
+        
+        // Test ID lookups
+        assertEquals("One", parser.get("one"));
+        assertEquals("Goodbye, Cruel World!", parser.get("goodbye"));
     }
 }
