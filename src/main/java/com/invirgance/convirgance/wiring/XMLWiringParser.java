@@ -161,9 +161,7 @@ public class XMLWiringParser
         Node child;
         PropertyDescriptor descriptor;
         Method method;
-        
         Object value;
-        String id;
         
         for(int i=0; i<list.getLength(); i++)
         {
@@ -177,16 +175,8 @@ public class XMLWiringParser
                 descriptor = new PropertyDescriptor(child.getNodeName(), object.getClass());
                 method = descriptor.getWriteMethod();
                 value = getValue(child.getChildNodes());
-
-                if(((Element)child).hasAttribute("id"))
-                {
-                    id = ((Element)child).getAttribute("id");
-                    
-                    if(lookup.containsKey(id)) throw new ConvirganceException("Duplicate id " + id + " on " + child.getNodeName() + " tag");
-
-                    lookup.put(id, value);
-                }
                 
+                registerId(((Element)child), value, true);
                 setValue(object, method, value);
             }
             catch(IntrospectionException e)
@@ -294,15 +284,8 @@ public class XMLWiringParser
     private Object parse(Element element)
     {
         Object value = parseValue(element);
-        String id = element.getAttribute("id");
-        String name = element.getTagName();
-
-        if(element.hasAttribute("id") && !name.equals("ref") && !name.equals("reference"))
-        {
-            if(lookup.containsKey(id)) throw new ConvirganceException("Duplicate id " + id + " on " + element.getNodeName() + " tag");
-
-            lookup.put(id, value);
-        }
+        
+        registerId(element, value, false);
         
         return value;
     }
@@ -349,6 +332,21 @@ public class XMLWiringParser
             default:
                 throw new ConvirganceException("Unknown object type " + element.getTagName());
         }
+    }
+    
+    private void registerId(Element element, Object value, boolean property)
+    {
+        String id = element.getAttribute("id");
+        String name = element.getTagName();
+        boolean check = element.hasAttribute("id");
+        
+        if(!element.hasAttribute("id")) return;
+        if(!property && name.equals("ref")) return;
+        if(!property && name.equals("reference")) return;
+        
+        if(lookup.containsKey(id)) throw new ConvirganceException("Duplicate id " + id + " on " + element.getNodeName() + " tag");
+
+        lookup.put(id, value);
     }
     
     public Object getRoot()
