@@ -11,9 +11,40 @@
             <ref id="one" />
         </list>
     </list>
+    <map>
+        <map>
+            <entry>
+                <ref id="one" />
+                <ref id="1" />
+            </entry>
+            <entry>
+                <string>Two</string>
+                <ref id="2" />
+            </entry>
+            <entry>
+                <ref id="three" />
+                <integer>3</integer>
+            </entry>
+        </map>
+    </map>
     <object>
         <object class="com.test.TestBean">
-            <string id="one">One</string>
+            <map>
+                <map>
+                    <entry>
+                        <string id="one">One</string>
+                        <integer id="1">1</integer>
+                    </entry>
+                    <entry>
+                        <string id="two">Two</string>
+                        <integer id="2">2</integer>
+                    </entry>
+                    <entry>
+                        <string id="three">Three</string>
+                        <integer id="3">3</integer>
+                    </entry>
+                </map>
+            </map>
         </object>
     </object>
 </object>

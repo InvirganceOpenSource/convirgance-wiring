@@ -299,6 +299,14 @@ public class XMLWiringParser
             
             entry = parseEntry(child.getChildNodes());
             
+            if(map.containsKey(entry.getKey())) throw new ConvirganceException("Duplicate Map entry: " + entry.getKey());
+            
+            if(entry.getKey() instanceof Reference || entry.getValue() instanceof Reference)
+            {
+                references.add(new MapEntryReference(map, entry));
+                continue;
+            }
+            
             map.put(entry.getKey(), entry.getValue());
         }
         
@@ -458,6 +466,32 @@ public class XMLWiringParser
         public void apply()
         {
             list.set(index, getValue());
+        }
+    }
+    
+    private class MapEntryReference extends Reference
+    {
+        private Map map;
+        private Map.Entry entry;
+
+        public MapEntryReference(Map map, Map.Entry entry)
+        {
+            super(null);
+            
+            this.map = map;
+            this.entry = entry;
+        }
+
+        @Override
+        public void apply()
+        {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            
+            if(key instanceof Reference) key = ((Reference)key).getValue();
+            if(value instanceof Reference) value = ((Reference)value).getValue();
+            
+            map.put(key, value);
         }
     }
 }

@@ -109,9 +109,14 @@ public class XMLWiringParserTest
         
         assertEquals(12, object.getPrimitiveInt());
         assertEquals(12, object.getObjectInteger());
+        
         assertEquals(1, object.getList().size());
         assertEquals("One", object.getList().get(0));
-        assertEquals("One", object.getObject().getString());
+        
+        assertEquals(3, object.getMap().size());
+        assertEquals(1, object.getMap().get("One"));
+        assertEquals(2, object.getMap().get("Two"));
+        assertEquals(3, object.getMap().get("Three"));
     }
         
 }
