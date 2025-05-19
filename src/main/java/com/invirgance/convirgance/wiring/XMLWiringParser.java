@@ -22,6 +22,9 @@ SOFTWARE.
 package com.invirgance.convirgance.wiring;
 
 import com.invirgance.convirgance.ConvirganceException;
+import com.invirgance.convirgance.json.JSONArray;
+import com.invirgance.convirgance.json.JSONObject;
+import com.invirgance.convirgance.json.JSONParser;
 import com.invirgance.convirgance.source.Source;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -29,10 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -122,6 +122,18 @@ public class XMLWiringParser
     
     private Object coerceValue(Class type, Object value)
     {
+        if(type.equals(JSONObject.class) && !(value instanceof JSONObject))
+        {
+            if(value instanceof Map) return new JSONObject((Map)value);
+            else return new JSONObject(value.toString());
+        }
+        
+        if(type.equals(JSONArray.class) && !(value instanceof JSONArray))
+        {
+            if(value instanceof Collection) return new JSONArray((Collection)value);
+            else return new JSONArray(value.toString());
+        }
+            
         if(!(value instanceof String)) return value;
         
         if(type.isPrimitive())
@@ -153,7 +165,7 @@ public class XMLWiringParser
     private void setValue(Object parent, Method method, Object value)
     {
         var parameter = method.getParameters()[0];
-                
+
         try
         {
             if(value instanceof Reference)
@@ -323,6 +335,18 @@ public class XMLWiringParser
         return value;
     }
     
+    private Object parseJSON(String json)
+    {
+        try
+        {
+            return new JSONParser(json).parse();
+        }
+        catch(IOException e)
+        {
+            throw new ConvirganceException(e);
+        }
+    }
+    
     private Object parseValue(Element element)
     {
         String id;
@@ -367,6 +391,9 @@ public class XMLWiringParser
                 
             case "double":
                 return Double.valueOf(getValue(element.getChildNodes()).toString());
+                
+            case "json":
+                return parseJSON(getValue(element.getChildNodes()).toString());
                 
             default:
                 throw new ConvirganceException("Unknown object type " + element.getTagName());

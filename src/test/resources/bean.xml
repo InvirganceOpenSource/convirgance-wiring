@@ -43,6 +43,27 @@
             <primitiveInt>
                 <ref id="int"/>
             </primitiveInt>
+            <jsonObject>
+                {"one": 1, "two": 2, "three": 3}
+            </jsonObject>
+            <jsonArray>
+                <list>
+                    <string>One</string>
+                    <string>Two</string>
+                    <string>Three</string>
+                </list>
+            </jsonArray>
         </object>
     </object>
+    <jsonObject>
+        <map>
+            <entry>
+                <string>value</string>
+                <string>Hello world!</string>
+            </entry>
+        </map>
+    </jsonObject>
+    <jsonArray>
+        <json>["One", "Two", "Three"]</json>
+    </jsonArray>
 </object>

@@ -1,5 +1,7 @@
 package com.test;
 
+import com.invirgance.convirgance.json.JSONArray;
+import com.invirgance.convirgance.json.JSONObject;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +51,9 @@ public class TestBean
     private Map<String,Integer> map;
     
     private TestBean object;
+    
+    private JSONObject jsonObject;
+    private JSONArray jsonArray;
 
     public String getString()
     {
@@ -190,6 +195,26 @@ public class TestBean
         this.object = object;
     }
 
+    public JSONObject getJsonObject()
+    {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject)
+    {
+        this.jsonObject = jsonObject;
+    }
+
+    public JSONArray getJsonArray()
+    {
+        return jsonArray;
+    }
+
+    public void setJsonArray(JSONArray jsonArray)
+    {
+        this.jsonArray = jsonArray;
+    }
+
     @Override
     public String toString()
     {
@@ -208,6 +233,8 @@ public class TestBean
                 ",\n    list=" + list +
                 ",\n    map=" + map +
                 ",\n    object=" + object +
+                ",\n    jsonObject=" + jsonObject +
+                ",\n    jsonArray=" + jsonArray +
                 "\n]";
     }
     

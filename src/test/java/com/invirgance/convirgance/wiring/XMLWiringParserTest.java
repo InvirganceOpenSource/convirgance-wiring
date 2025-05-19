@@ -21,6 +21,8 @@ SOFTWARE.
  */
 package com.invirgance.convirgance.wiring;
 
+import com.invirgance.convirgance.json.JSONArray;
+import com.invirgance.convirgance.json.JSONObject;
 import com.test.TestBean;
 import com.invirgance.convirgance.output.JSONOutput;
 import com.invirgance.convirgance.source.ClasspathSource;
@@ -94,6 +96,11 @@ public class XMLWiringParserTest
         assertEquals("Goodbye, Cruel World!", object.getObject().getString());
         assertEquals(12, object.getObject().getPrimitiveInt()); // Mapped from id reference
         
+        assertEquals(new JSONObject("{\"value\":\"Hello world!\"}"), object.getJsonObject());
+        assertEquals(new JSONArray("[\"One\",\"Two\",\"Three\"]"), object.getJsonArray());
+        assertEquals(new JSONObject("{\"one\":1,\"two\":2,\"three\":3}"), object.getObject().getJsonObject());
+        assertEquals(new JSONArray("[\"One\",\"Two\",\"Three\"]"), object.getObject().getJsonArray());
+        
         // Test ID lookups
         assertEquals("One", parser.get("one"));
         assertEquals("Goodbye, Cruel World!", parser.get("goodbye"));
@@ -104,8 +111,6 @@ public class XMLWiringParserTest
     {
         var parser = new XMLWiringParser(new ClasspathSource("/references.xml"));
         var object = (TestBean)parser.getRoot();
-        
-        System.out.println(object);
         
         assertEquals(12, object.getPrimitiveInt());
         assertEquals(12, object.getObjectInteger());
