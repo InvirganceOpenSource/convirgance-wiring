@@ -30,8 +30,10 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +52,31 @@ public class XMLWiringParser
     
     private Map<String,Object> lookup;
     private List<Reference> references;
+    
+    private static Properties tags = new Properties();
+    
+    static {
+        
+        try
+        {
+            Enumeration<URL> resources = XMLWiringParser.class.getClassLoader().getResources("META-INF/wirings.properties");
+            Properties properties;
+            URL url;
+            
+            while(resources.hasMoreElements())
+            {
+                url = resources.nextElement();
+                properties = new Properties();
+
+                properties.load(url.openStream());
+                tags.putAll(properties);
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
     
     public XMLWiringParser(Source source)
     {
@@ -347,11 +374,33 @@ public class XMLWiringParser
         }
     }
     
+    private Object parseCustom(Element element)
+    {
+        String name = element.getNodeName();
+        String className = tags.getProperty(name);
+        
+        Class clazz;
+        Constructor constructor;
+        
+        try
+        {
+            clazz = Class.forName(className);
+            constructor = clazz.getConstructor();
+            
+            return populateObject(constructor.newInstance(), element.getChildNodes());
+        }
+        catch(Exception e)
+        {
+            throw new ConvirganceException(e);
+        }
+    }
+    
     private Object parseValue(Element element)
     {
         String id;
+        String name = element.getTagName();
         
-        switch(element.getTagName())
+        switch(name)
         {
             case "object":
                 return parseObject(element);
@@ -396,6 +445,8 @@ public class XMLWiringParser
                 return parseJSON(getValue(element.getChildNodes()).toString());
                 
             default:
+                if(tags.containsKey(name)) return parseCustom(element);
+                
                 throw new ConvirganceException("Unknown object type " + element.getTagName());
         }
     }

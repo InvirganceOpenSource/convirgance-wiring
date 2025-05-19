@@ -36,7 +36,7 @@
         </map>
     </map>
     <object>
-        <object class="com.test.TestBean">
+        <TestBean>
             <string id="goodbye">
                 <![CDATA[Goodbye]]>, <![CDATA[Cruel World!]]>
             </string>
@@ -53,7 +53,7 @@
                     <string>Three</string>
                 </list>
             </jsonArray>
-        </object>
+        </TestBean>
     </object>
     <jsonObject>
         <map>
