@@ -56,26 +56,8 @@ public class XMLWiringParser
     private static Properties tags = new Properties();
     
     static {
-        
-        try
-        {
-            Enumeration<URL> resources = XMLWiringParser.class.getClassLoader().getResources("META-INF/wirings.properties");
-            Properties properties;
-            URL url;
-            
-            while(resources.hasMoreElements())
-            {
-                url = resources.nextElement();
-                properties = new Properties();
-
-                properties.load(url.openStream());
-                tags.putAll(properties);
-            }
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
+        initTags("META-INF/wiring.properties");
+        initTags("META-INF/wirings.properties");
     }
     
     public XMLWiringParser(Source source)
@@ -88,6 +70,40 @@ public class XMLWiringParser
         for(Reference reference : references)
         {
             reference.apply();
+        }
+    }
+    
+    private static void initTags(String path)
+    {
+        ClassLoader loader = XMLWiringParser.class.getClassLoader();
+        Enumeration<URL> resources;
+        Properties properties;
+        URL url;
+        
+        try
+        {
+            resources = loader.getResources(path);
+
+            while(resources.hasMoreElements())
+            {
+                url = resources.nextElement();
+                properties = new Properties();
+
+                // Don't let one bad file stop the load
+                try(InputStream in = url.openStream())
+                {
+                    properties.load(in);
+                    tags.putAll(properties);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
         }
     }
     
