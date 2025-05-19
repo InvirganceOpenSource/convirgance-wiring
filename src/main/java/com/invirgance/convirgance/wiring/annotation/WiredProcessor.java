@@ -89,7 +89,7 @@ public class WiredProcessor extends AbstractProcessor
         try
         {
             file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/wirings.properties");
-System.err.println("Writing " + file);
+
             try(OutputStream out = file.openOutputStream())
             {
                 properties.store(out, null);
