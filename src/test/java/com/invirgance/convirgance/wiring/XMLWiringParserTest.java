@@ -24,11 +24,7 @@ package com.invirgance.convirgance.wiring;
 import com.invirgance.convirgance.json.JSONArray;
 import com.invirgance.convirgance.json.JSONObject;
 import com.test.TestBean;
-import com.invirgance.convirgance.output.JSONOutput;
 import com.invirgance.convirgance.source.ClasspathSource;
-import com.invirgance.convirgance.web.binding.QueryBinding;
-import com.invirgance.convirgance.web.parameter.RequestParameter;
-import com.invirgance.convirgance.web.service.SelectService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,32 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author jbanes
  */
 public class XMLWiringParserTest
-{
-    @Test
-    public void testDatabaseParse()
-    {
-        var parser = new XMLWiringParser(new ClasspathSource("/database.xml"));
-        var object = (SelectService)parser.getRoot();
-        
-        assertEquals(3, object.getParameters().size());
-        assertEquals("zipcode", object.getParameters().get(0).getName());
-        assertEquals("state", object.getParameters().get(1).getName());
-        assertEquals("discountCode", object.getParameters().get(2).getName());
-        assertEquals(3, object.getParameters().size());
-        assertEquals("", ((RequestParameter)object.getParameters().get(0)).getDefaultValue());
-        assertEquals("", ((RequestParameter)object.getParameters().get(1)).getDefaultValue());
-        assertNull(((RequestParameter)object.getParameters().get(2)).getDefaultValue());
-        
-        assertEquals(QueryBinding.class, object.getBinding().getClass());
-        assertEquals("jdbc/sample", ((QueryBinding)object.getBinding()).getJndiName());
-        assertEquals("select * from APP.CUSTOMER\n" +
-"                    where (:zipcode = '' or ZIP = :zipcode)\n" +
-"                    and (:state = '' or STATE = :state)\n" +
-"                    and (:discountCode = '' or DISCOUNT_CODE = :discountCode)", ((QueryBinding)object.getBinding()).getSql().trim());
-
-        assertEquals(JSONOutput.class, object.getOutput().getClass());
-    }
-    
+{   
     @Test
     public void testBeanParse()
     {
