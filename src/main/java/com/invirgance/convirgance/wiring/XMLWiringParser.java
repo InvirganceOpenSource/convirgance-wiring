@@ -482,6 +482,11 @@ public class XMLWiringParser
         lookup.put(id, value);
     }
     
+    public static Properties getCustomTags()
+    {
+        return new Properties(tags);
+    }
+    
     public Object getRoot()
     {
         return root;
