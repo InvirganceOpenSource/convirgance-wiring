@@ -47,13 +47,21 @@ public class XMLWiringParser
 {
     private Document document;
     private Object root;
+    
     private Map<String,Object> lookup;
+    private List<Reference> references;
     
     public XMLWiringParser(Source source)
     {
         this.document = load(source);
         this.lookup = new HashMap<>();
+        this.references = new ArrayList<>();
         this.root = parse(this.document.getDocumentElement());
+        
+        for(Reference reference : references)
+        {
+            reference.apply();
+        }
     }
     
     private Document load(Source source)
@@ -148,6 +156,12 @@ public class XMLWiringParser
                 
         try
         {
+            if(value instanceof Reference)
+            {
+                references.add(new MethodReference(parent, method, (Reference)value));
+                return;
+            }
+            
             method.invoke(parent, coerceValue(parameter.getType(), value));
         }
         catch(IllegalAccessException | InvocationTargetException ex)
@@ -292,6 +306,8 @@ public class XMLWiringParser
     
     private Object parseValue(Element element)
     {
+        String id;
+        
         switch(element.getTagName())
         {
             case "object":
@@ -305,7 +321,11 @@ public class XMLWiringParser
                 
             case "ref":
             case "reference":
-                return lookup.get(element.getAttribute("id"));
+                id = element.getAttribute("id");
+                
+                if(!lookup.containsKey(id)) return new Reference(id);
+                
+                return lookup.get(id);
                 
             case "null":
                 return null;
@@ -357,5 +377,56 @@ public class XMLWiringParser
     public Object get(String id)
     {
         return lookup.get(id);
+    }
+    
+    private class Reference
+    {
+        private String id;
+        
+        public Reference(String id)
+        {
+            this.id = id;
+        }
+        
+        public Object getValue()
+        {
+            if(!lookup.containsKey(id)) throw new ConvirganceException("Reference to id \"" + id + "\" not found");
+            
+            return lookup.get(id);
+        }
+        
+        public void apply()
+        {
+            // Not implemented
+        }
+    }
+    
+    private class MethodReference extends Reference
+    {
+        private Object parent;
+        private Method method;
+        
+        public MethodReference(Object parent, Method method, Reference reference)
+        {
+            super(reference.id);
+            
+            this.parent = parent;
+            this.method = method;
+        }
+
+        @Override
+        public void apply()
+        {
+            var parameter = method.getParameters()[0];
+                
+            try
+            {
+                method.invoke(parent, coerceValue(parameter.getType(), getValue()));
+            }
+            catch(IllegalAccessException | InvocationTargetException ex)
+            {
+                throw new ConvirganceException(ex);
+            }
+        }
     }
 }

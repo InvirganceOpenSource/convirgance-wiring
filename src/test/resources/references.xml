@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Reference is made prior to the definition of the id -->
+<object class="com.test.TestBean">
+    <primitiveInt>
+        <ref id="int" />
+    </primitiveInt>
+    <objectInteger id="int">12</objectInteger>
+</object>

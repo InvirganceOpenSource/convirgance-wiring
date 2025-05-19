@@ -98,4 +98,14 @@ public class XMLWiringParserTest
         assertEquals("One", parser.get("one"));
         assertEquals("Goodbye, Cruel World!", parser.get("goodbye"));
     }
+    
+    @Test
+    public void testDelayedReference()
+    {
+        var parser = new XMLWiringParser(new ClasspathSource("/references.xml"));
+        var object = (TestBean)parser.getRoot();
+        
+        System.out.println(object);
+    }
+        
 }
