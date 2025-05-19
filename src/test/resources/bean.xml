@@ -2,7 +2,7 @@
 
 <object class="com.test.TestBean">
     <string>Hello world!</string>
-    <primitiveInt>12</primitiveInt>
+    <primitiveInt id="int">12</primitiveInt>
     <primitiveLong>1337</primitiveLong>
     <primitiveBoolean>true</primitiveBoolean>
     <primitiveFloat>12.3</primitiveFloat>
@@ -40,6 +40,9 @@
             <string id="goodbye">
                 <![CDATA[Goodbye]]>, <![CDATA[Cruel World!]]>
             </string>
+            <primitiveInt>
+                <ref id="int"/>
+            </primitiveInt>
         </object>
     </object>
 </object>

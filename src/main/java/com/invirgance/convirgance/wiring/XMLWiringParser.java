@@ -295,8 +295,9 @@ public class XMLWiringParser
     {
         Object value = parseValue(element);
         String id = element.getAttribute("id");
+        String name = element.getTagName();
 
-        if(element.hasAttribute("id"))
+        if(element.hasAttribute("id") && !name.equals("ref") && !name.equals("reference"))
         {
             if(lookup.containsKey(id)) throw new ConvirganceException("Duplicate id " + id + " on " + element.getNodeName() + " tag");
 
@@ -318,6 +319,10 @@ public class XMLWiringParser
             
             case "map":
                 return parseMap(element.getChildNodes());
+                
+            case "ref":
+            case "reference":
+                return lookup.get(element.getAttribute("id"));
                 
             case "null":
                 return null;

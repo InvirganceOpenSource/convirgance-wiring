@@ -92,6 +92,7 @@ public class XMLWiringParserTest
         
         assertNotNull(object.getObject());
         assertEquals("Goodbye, Cruel World!", object.getObject().getString());
+        assertEquals(12, object.getObject().getPrimitiveInt()); // Mapped from id reference
         
         // Test ID lookups
         assertEquals("One", parser.get("one"));
