@@ -161,7 +161,7 @@ public class XMLWiringParser
                 references.add(new MethodReference(parent, method, (Reference)value));
                 return;
             }
-            
+
             method.invoke(parent, coerceValue(parameter.getType(), value));
         }
         catch(IllegalAccessException | InvocationTargetException ex)
@@ -221,6 +221,7 @@ public class XMLWiringParser
     private List parseList(NodeList children)
     {
         var list = new ArrayList();
+        Object value;
         Node child;
         
         for(int i=0; i<children.getLength(); i++)
@@ -229,7 +230,17 @@ public class XMLWiringParser
             
             if(!(child instanceof Element)) continue;
             
-            list.add(parse((Element)child));
+            value = parse((Element)child);
+            
+            if(value instanceof Reference)
+            {
+                references.add(new ListReference(list, list.size(), (Reference)value));
+                list.add(null);
+            }
+            else
+            {
+                list.add(value);
+            }
         }
         
         return list;
@@ -427,6 +438,26 @@ public class XMLWiringParser
             {
                 throw new ConvirganceException(ex);
             }
+        }
+    }
+    
+    private class ListReference extends Reference
+    {
+        private List list;
+        private int index;
+        
+        public ListReference(List list, int index, Reference reference)
+        {
+            super(reference.id);
+            
+            this.list = list;
+            this.index = index;
+        }
+
+        @Override
+        public void apply()
+        {
+            list.set(index, getValue());
         }
     }
 }

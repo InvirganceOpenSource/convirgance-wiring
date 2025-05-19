@@ -6,4 +6,14 @@
         <ref id="int" />
     </primitiveInt>
     <objectInteger id="int">12</objectInteger>
+    <list>
+        <list>
+            <ref id="one" />
+        </list>
+    </list>
+    <object>
+        <object class="com.test.TestBean">
+            <string id="one">One</string>
+        </object>
+    </object>
 </object>

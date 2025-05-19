@@ -106,6 +106,12 @@ public class XMLWiringParserTest
         var object = (TestBean)parser.getRoot();
         
         System.out.println(object);
+        
+        assertEquals(12, object.getPrimitiveInt());
+        assertEquals(12, object.getObjectInteger());
+        assertEquals(1, object.getList().size());
+        assertEquals("One", object.getList().get(0));
+        assertEquals("One", object.getObject().getString());
     }
         
 }
