@@ -37,8 +37,9 @@ public class XMLWiringParserTest
     @Test
     public void testBeanParse()
     {
-        var parser = new XMLWiringParser(new ClasspathSource("/bean.xml"));
-        var object = (TestBean)parser.getRoot();
+        var source = new ClasspathSource("/bean.xml");
+        var parser = new XMLWiringParser<TestBean>(source);
+        var object = parser.getRoot();
         
         assertEquals("Hello world!", object.getString());
         assertEquals(12, object.getPrimitiveInt());
@@ -80,8 +81,9 @@ public class XMLWiringParserTest
     @Test
     public void testDelayedReference()
     {
-        var parser = new XMLWiringParser(new ClasspathSource("/references.xml"));
-        var object = (TestBean)parser.getRoot();
+        var source = new ClasspathSource("/references.xml");
+        var parser = new XMLWiringParser<TestBean>(source);
+        var object = parser.getRoot();
         
         assertEquals(12, object.getPrimitiveInt());
         assertEquals(12, object.getObjectInteger());

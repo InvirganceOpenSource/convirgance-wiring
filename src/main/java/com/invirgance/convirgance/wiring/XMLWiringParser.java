@@ -55,10 +55,10 @@ import org.xml.sax.SAXException;
  * 
  * @author jbanes
  */
-public class XMLWiringParser
+public class XMLWiringParser<T>
 {
     private Document document;
-    private Object root;
+    private T root;
     
     private Map<String,Object> lookup;
     private List<Reference> references;
@@ -80,7 +80,7 @@ public class XMLWiringParser
         this.document = load(source);
         this.lookup = new HashMap<>();
         this.references = new ArrayList<>();
-        this.root = parse(this.document.getDocumentElement());
+        this.root = (T)parse(this.document.getDocumentElement());
         
         for(Reference reference : references)
         {
@@ -226,7 +226,7 @@ public class XMLWiringParser
 
         try
         {
-            if(value instanceof Reference)
+            if(value instanceof XMLWiringParser.Reference)
             {
                 references.add(new MethodReference(parent, method, (Reference)value));
                 return;
@@ -302,7 +302,7 @@ public class XMLWiringParser
             
             value = parse((Element)child);
             
-            if(value instanceof Reference)
+            if(value instanceof XMLWiringParser.Reference)
             {
                 references.add(new ListReference(list, list.size(), (Reference)value));
                 list.add(null);
@@ -371,7 +371,7 @@ public class XMLWiringParser
             
             if(map.containsKey(entry.getKey())) throw new ConvirganceException("Duplicate Map entry: " + entry.getKey());
             
-            if(entry.getKey() instanceof Reference || entry.getValue() instanceof Reference)
+            if(entry.getKey() instanceof XMLWiringParser.Reference || entry.getValue() instanceof XMLWiringParser.Reference)
             {
                 references.add(new MapEntryReference(map, entry));
                 continue;
@@ -513,7 +513,7 @@ public class XMLWiringParser
      * 
      * @return the root object in the XML file
      */
-    public Object getRoot()
+    public T getRoot()
     {
         return root;
     }
@@ -621,8 +621,8 @@ public class XMLWiringParser
             Object key = entry.getKey();
             Object value = entry.getValue();
             
-            if(key instanceof Reference) key = ((Reference)key).getValue();
-            if(value instanceof Reference) value = ((Reference)value).getValue();
+            if(key instanceof XMLWiringParser.Reference) key = ((Reference)key).getValue();
+            if(value instanceof XMLWiringParser.Reference) value = ((Reference)value).getValue();
             
             map.put(key, value);
         }
