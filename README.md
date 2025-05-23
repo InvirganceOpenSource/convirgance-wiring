@@ -21,7 +21,7 @@ Add the following dependency to your Maven `pom.xml` file:
 
 ## Example
 
-Let's say we want to develop a system for building ETL pipelines. Operations might incldue loading a CSV file and running a SQL statement to transform the data.
+Let's say we want to develop a system for building ETL pipelines. Operations might include loading a CSV file and running a SQL statement to transform the data.
 
 First we would create a library of the operations we want. We can optionally use the `@Wiring` annotation to create custom tags rather than referencing the
 fully qualified Java name.
@@ -64,7 +64,7 @@ pipeline.execute(datasource);
 
 ## Documentation
 
-- TBD
+- [Documentation](https://docs.invirgance.com/convirgance/latest/#/convirgance-wiring?id=wiring-compositional-configuration)
 - [JavaDocs](https://docs.invirgance.com/javadocs/convirgance-wiring/)
 
 
