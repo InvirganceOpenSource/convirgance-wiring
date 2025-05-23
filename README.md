@@ -19,6 +19,49 @@ Add the following dependency to your Maven `pom.xml` file:
 </dependency>
 ```
 
+## Example
+
+Let's say we want to develop a system for building ETL pipelines. Operations might incldue loading a CSV file and running a SQL statement to transform the data.
+
+First we would create a library of the operations we want. We can optionally use the `@Wiring` annotation to create custom tags rather than referencing the
+fully qualified Java name.
+
+![Example Wiring](https://github.com/user-attachments/assets/ad75422c-9cc1-4d1f-a6d8-8e063a2da0e5)
+
+With our library in hand, we can now create configuration files to wire up these pipelines:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ETLPipeline>
+    <operations>
+        <list>
+            <CSVLoad>
+                <filename>customer_data.csv</filename>
+            </CSVLoad>
+            <UpdateCommand>
+                <sql>
+                <![CDATA[
+                    insert into PROCESSED
+                    select * from RAW;
+                ]]>
+                </sql>
+            </UpdateCommand>
+        </list>
+    </operations>
+</ETLPipeline>
+
+```
+
+Our pipeline runner then just needs to obtain the object graph from the configuration file and run it:
+
+```java
+var source = new FileSource("mypipeline.xml");
+var pipeline = (ETLOperation)new XMLWiringParser(source).getRoot();
+
+pipeline.execute(datasource);
+```
+
 ## Documentation
 
 - TBD
