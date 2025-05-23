@@ -21,6 +21,7 @@ SOFTWARE.
  */
 package com.invirgance.convirgance.wiring;
 
+import com.invirgance.convirgance.wiring.annotation.Wiring;
 import com.invirgance.convirgance.ConvirganceException;
 import com.invirgance.convirgance.json.JSONArray;
 import com.invirgance.convirgance.json.JSONObject;
@@ -42,7 +43,16 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Provides facilities for loading Wiring XML files. In most circumstances, you
+ * merely need to provide a {@link Source} to the constructor that points to the XML
+ * file and then call {@link #getRoot() getRoot} to retrieve the configured object. In 
+ * cases where you wish to access objects within the structure, {@link get(string) get(id)}
+ * can be used.
+ * <br><br>
+ * Custom tags can be plugged into XMLWiringParser by including a 
+ * <code>/META-INF/wirings.properties</code> file in your project, or by using
+ * the {@link Wiring} annotation.
+ * 
  * @author jbanes
  */
 public class XMLWiringParser
@@ -60,6 +70,11 @@ public class XMLWiringParser
         initTags("META-INF/wirings.properties");
     }
     
+    /**
+     * Create a new XMLWiringParser to parse the given {@link Source}.
+     * 
+     * @param source the source from where to read the XML file
+     */
     public XMLWiringParser(Source source)
     {
         this.document = load(source);
@@ -482,16 +497,35 @@ public class XMLWiringParser
         lookup.put(id, value);
     }
     
+    /**
+     * Provides a list of custom tags this parser is aware of and the classes
+     * loaded to service those tags.
+     * 
+     * @return A Properties object with the tag name as the key and class name as the value
+     */
     public static Properties getCustomTags()
     {
         return new Properties(tags);
     }
     
+    /**
+     * Returns the object described by the XML file
+     * 
+     * @return the root object in the XML file
+     */
     public Object getRoot()
     {
         return root;
     }
     
+    /**
+     * Returns the object in the XML file with the specified <code>id</code> 
+     * attribute on its tag. If the <code>id</code> is not found, <code>null</code> 
+     * is returned instead.
+     * 
+     * @param id the string identifier to find
+     * @return 
+     */
     public Object get(String id)
     {
         return lookup.get(id);

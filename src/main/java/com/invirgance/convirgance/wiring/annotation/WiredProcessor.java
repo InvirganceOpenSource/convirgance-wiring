@@ -22,7 +22,6 @@ SOFTWARE.
 package com.invirgance.convirgance.wiring.annotation;
 
 import com.google.auto.service.AutoService;
-import com.invirgance.convirgance.wiring.XMLWiringParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,7 +35,8 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 /**
- *
+ * Used by the javac compiler to process the {@link Wiring} annotation
+ * 
  * @author jbanes
  */
 @SupportedAnnotationTypes("com.invirgance.convirgance.wiring.annotation.Wiring")

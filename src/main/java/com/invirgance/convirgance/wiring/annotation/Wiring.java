@@ -24,7 +24,16 @@ package com.invirgance.convirgance.wiring.annotation;
 import java.lang.annotation.*;
 
 /**
- *
+ * Annotation used to configure custom tags for Wiring files.
+ * <br><br>
+ * For example, placing the <code>@Wiring</code> annotation at the top of a class
+ * called <code>com.example.MyObject</code> would generate the custom 
+ * tag <code>&lt;MyObject&gt;&lt;/MyObject&gt;</code>.
+ * <br><br>
+ * Tag names can be customized by passing the desired name to the annotation. For
+ * example, <code>@Wiring("Bob")</code> would generate the custom 
+ * tag <code>&lt;Bob&gt;&lt;/Bob&gt;</code> instead of <code>&lt;MyObject&gt;&lt;/MyObject&gt;</code>.
+ * 
  * @author jbanes
  */
 @Documented
@@ -32,5 +41,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface Wiring
 {
+    /** Name of the custom tag **/
     public String value() default "";
 }
