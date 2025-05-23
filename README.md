@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/badge/Version-pre&dash;release-blue) ![License](https://img.shields.io/badge/License-MIT-green) ![Repository](https://img.shields.io/badge/Platform-Java-gold) ![Repository](https://img.shields.io/badge/Repository-Maven_Central-red)
 
-Solution for compositional configurations that wire up complex Java object hierarchies like ETL pipelines, web services, and OLAP schemas. Used by 
+Solution for compositional configurations that wire up complex Java object hierarchies like ETL pipelines, web services, and OLAP schemas. Used with 
 [Convirgance (OLAP)](https://github.com/InvirganceOpenSource/convirgance-olap/) and 
 [Convirgance (Web Services)](https://github.com/InvirganceOpenSource/convirgance-web/) for configuration. 
 
