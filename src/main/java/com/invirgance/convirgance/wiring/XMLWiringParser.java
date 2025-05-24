@@ -63,6 +63,8 @@ public class XMLWiringParser<T>
     private Map<String,Object> lookup;
     private List<Reference> references;
     
+    private Stack<String> path; // Debugging
+    
     private static Properties tags = new Properties();
     
     static {
@@ -80,6 +82,7 @@ public class XMLWiringParser<T>
         this.document = load(source);
         this.lookup = new HashMap<>();
         this.references = new ArrayList<>();
+        this.path = new Stack<>();
         this.root = (T)parse(this.document.getDocumentElement());
         
         for(Reference reference : references)
@@ -120,6 +123,20 @@ public class XMLWiringParser<T>
         {
             e.printStackTrace();
         }
+    }
+    
+    private String getPath()
+    {
+        StringBuffer buffer = new StringBuffer();
+        
+        for(String element : path)
+        {
+            if(buffer.length() > 0) buffer.append(" > ");
+            
+            buffer.append(element);
+        }
+        
+        return buffer.toString();
     }
     
     private Document load(Source source)
@@ -167,15 +184,24 @@ public class XMLWiringParser<T>
             }
             else
             {
-                if(element != null) throw new ConvirganceException("Unexpected element " + child.getNodeName() + ", child element " + element.getTagName() + " already found"); 
+                if(element != null) throw new ConvirganceException("Unexpected element " + child.getNodeName() + " at [" + getPath() + "], child element " + element.getTagName() + " already found"); 
                 
-                throw new ConvirganceException("Unexpected node " + child.getNodeName());
+                throw new ConvirganceException("Unexpected node " + child.getNodeName() + " at [" + getPath() + "]");
             }
         }
 
         if(element != null) return parse(element);
         
         return buffer.toString();
+    }
+    
+    private String[] parseStringArray(String value)
+    {
+        String[] values = value.split(",");
+        
+        for(int i=0; i<values.length; i++) values[i] = values[i].trim();
+        
+        return values;
     }
     
     private Object coerceValue(Class type, Object value)
@@ -193,7 +219,7 @@ public class XMLWiringParser<T>
         }
             
         if(!(value instanceof String)) return value;
-        
+
         if(type.isPrimitive())
         {
             if(type.equals(byte.class)) return Byte.valueOf((String)value);
@@ -215,6 +241,7 @@ public class XMLWiringParser<T>
             if(type.equals(Float.class)) return Float.valueOf((String)value);
             if(type.equals(Double.class)) return Double.valueOf((String)value);
             if(type.equals(Character.class)) return value.toString().charAt(0);
+            if(type.equals(String[].class)) return parseStringArray((String)value);
         }
         
         return value;
@@ -234,9 +261,13 @@ public class XMLWiringParser<T>
 
             method.invoke(parent, coerceValue(parameter.getType(), value));
         }
+        catch(IllegalArgumentException e)
+        {
+            throw new ConvirganceException("Unable to set property at [" + getPath() + "] with expected type [" + parameter.getType() + "] and actual type of [" + coerceValue(parameter.getType(), value).getClass() + "], " + e.getMessage(), e);
+        }
         catch(IllegalAccessException | InvocationTargetException ex)
         {
-            throw new ConvirganceException(ex);
+            throw new ConvirganceException("Unable to set property at [" + getPath() + "], " + ex.getMessage(), ex);
         }
     }
     
@@ -254,19 +285,23 @@ public class XMLWiringParser<T>
             // Skip comments, whitespace, and other unnecessary info
             if(!(child instanceof Element)) continue;
             
+            path.push(child.getNodeName());
+            
             try
             {
                 descriptor = new PropertyDescriptor(child.getNodeName(), object.getClass());
                 method = descriptor.getWriteMethod();
                 value = getValue(child.getChildNodes());
-                
+
                 registerId(((Element)child), value, true);
                 setValue(object, method, value);
             }
             catch(IntrospectionException e)
             {
-                throw new ConvirganceException("Property " + child.getNodeName() + " does not exist on object " + object.getClass().getName());
+                throw new ConvirganceException("Property " + child.getNodeName() + " does not exist on object " + object.getClass().getName() + ", path [" + getPath() + "]");
             }
+            
+            path.pop();
         }
         
         return object;
@@ -284,7 +319,7 @@ public class XMLWiringParser<T>
         }
         catch(Exception e)
         {
-            throw new ConvirganceException(e);
+            throw new ConvirganceException("Error parsing object at path [" + getPath() + "], " + e.getMessage(), e);
         }
     }
     
@@ -327,7 +362,7 @@ public class XMLWiringParser<T>
             child = children.item(i);
             
             if(!(child instanceof Element)) continue;
-            if(index >= keyValue.length) throw new ConvirganceException("Too many values in Map entry! Should be just key and value.");
+            if(index >= keyValue.length) throw new ConvirganceException("Too many values in Map entry at [" + getPath() + "]! Should be just key and value.");
             
             keyValue[index++] = parse((Element)child);
         }
@@ -365,11 +400,11 @@ public class XMLWiringParser<T>
             child = children.item(i);
             
             if(!(child instanceof Element)) continue;
-            if(!child.getNodeName().equals("entry")) throw new ConvirganceException("Unexpected value " + child.getNodeName() + " while parsing Map");
+            if(!child.getNodeName().equals("entry")) throw new ConvirganceException("Unexpected value " + child.getNodeName() + " while parsing Map at [" + getPath() + "]");
             
             entry = parseEntry(child.getChildNodes());
             
-            if(map.containsKey(entry.getKey())) throw new ConvirganceException("Duplicate Map entry: " + entry.getKey());
+            if(map.containsKey(entry.getKey())) throw new ConvirganceException("Duplicate Map entry: " + entry.getKey() + " at [" + getPath() + "]");
             
             if(entry.getKey() instanceof XMLWiringParser.Reference || entry.getValue() instanceof XMLWiringParser.Reference)
             {
@@ -388,6 +423,7 @@ public class XMLWiringParser<T>
     {
         Object value = parseValue(element);
         
+        path.pop();
         registerId(element, value, false);
         
         return value;
@@ -401,7 +437,7 @@ public class XMLWiringParser<T>
         }
         catch(IOException e)
         {
-            throw new ConvirganceException(e);
+            throw new ConvirganceException("Unexpected error parsing JSON at [" + getPath() + "], " + e.getMessage(), e);
         }
     }
     
@@ -420,9 +456,9 @@ public class XMLWiringParser<T>
             
             return populateObject(constructor.newInstance(), element.getChildNodes());
         }
-        catch(Exception e)
+        catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e)
         {
-            throw new ConvirganceException(e);
+            throw new ConvirganceException("Unexpected error constructing object at [" + getPath() + "], " + e.getMessage(), e);
         }
     }
     
@@ -430,6 +466,8 @@ public class XMLWiringParser<T>
     {
         String id;
         String name = element.getTagName();
+        
+        path.push(name);
         
         switch(name)
         {
@@ -478,7 +516,7 @@ public class XMLWiringParser<T>
             default:
                 if(tags.containsKey(name)) return parseCustom(element);
                 
-                throw new ConvirganceException("Unknown object type " + element.getTagName());
+                throw new ConvirganceException("Unknown object type " + element.getTagName() + " at path [" + getPath() + "]");
         }
     }
     
