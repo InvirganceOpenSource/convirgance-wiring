@@ -54,6 +54,9 @@ public class TestBean
     
     private JSONObject jsonObject;
     private JSONArray jsonArray;
+    
+    private String[] stringArray;
+    private int[] intArray;
 
     public String getString()
     {
@@ -213,6 +216,26 @@ public class TestBean
     public void setJsonArray(JSONArray jsonArray)
     {
         this.jsonArray = jsonArray;
+    }
+
+    public String[] getStringArray()
+    {
+        return stringArray;
+    }
+
+    public void setStringArray(String[] stringArray)
+    {
+        this.stringArray = stringArray;
+    }
+
+    public int[] getIntArray()
+    {
+        return intArray;
+    }
+
+    public void setIntArray(int[] intArray)
+    {
+        this.intArray = intArray;
     }
 
     @Override

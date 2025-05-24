@@ -66,4 +66,10 @@
     <jsonArray>
         <json>["One", "Two", "Three"]</json>
     </jsonArray>
+    <stringArray>
+        One, Two, Three
+    </stringArray>
+    <intArray>
+        <json>[1, 2, 3]</json>
+    </intArray>
 </object>

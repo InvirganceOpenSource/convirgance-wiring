@@ -73,6 +73,16 @@ public class XMLWiringParserTest
         assertEquals(new JSONObject("{\"one\":1,\"two\":2,\"three\":3}"), object.getObject().getJsonObject());
         assertEquals(new JSONArray("[\"One\",\"Two\",\"Three\"]"), object.getObject().getJsonArray());
         
+        assertEquals(3, object.getStringArray().length);
+        assertEquals("One", object.getStringArray()[0]);
+        assertEquals("Two", object.getStringArray()[1]);
+        assertEquals("Three", object.getStringArray()[2]);
+        
+        assertEquals(3, object.getIntArray().length);
+        assertEquals(1, object.getIntArray()[0]);
+        assertEquals(2, object.getIntArray()[1]);
+        assertEquals(3, object.getIntArray()[2]);
+        
         // Test ID lookups
         assertEquals("One", parser.get("one"));
         assertEquals("Goodbye, Cruel World!", parser.get("goodbye"));

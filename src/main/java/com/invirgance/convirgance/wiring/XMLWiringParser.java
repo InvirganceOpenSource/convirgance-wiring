@@ -31,6 +31,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -195,6 +196,27 @@ public class XMLWiringParser<T>
         return buffer.toString();
     }
     
+    private Object parseArray(Class type, List values)
+    {
+        Class arrayType = type.componentType();
+        Object array = Array.newInstance(arrayType, values.size());
+        
+        for(int i=0; i<values.size(); i++)
+        {
+            if(arrayType.equals(boolean.class)) Array.setBoolean(array, i, (Boolean)values.get(i));
+            else if(arrayType.equals(byte.class)) Array.setByte(array, i, (Byte)values.get(i));
+            else if(arrayType.equals(char.class)) Array.setChar(array, i, (Character)values.get(i));
+            else if(arrayType.equals(double.class)) Array.setDouble(array, i, (Double)values.get(i));
+            else if(arrayType.equals(float.class)) Array.setFloat(array, i, (Float)values.get(i));
+            else if(arrayType.equals(int.class)) Array.setInt(array, i, (Integer)values.get(i));
+            else if(arrayType.equals(long.class)) Array.setLong(array, i, (Long)values.get(i));
+            else if(arrayType.equals(short.class)) Array.setShort(array, i, (Short)values.get(i));
+            else Array.set(array, i, values.get(i));
+        }
+        
+        return array;
+    }
+    
     private String[] parseStringArray(String value)
     {
         String[] values = value.split(",");
@@ -216,6 +238,11 @@ public class XMLWiringParser<T>
         {
             if(value instanceof Collection) return new JSONArray((Collection)value);
             else return new JSONArray(value.toString());
+        }
+        
+        if(type.isArray() && value instanceof List) 
+        {
+            return parseArray(type, (List)value);
         }
             
         if(!(value instanceof String)) return value;
