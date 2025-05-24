@@ -57,7 +57,7 @@ Our pipeline runner then just needs to obtain the object graph from the configur
 
 ```java
 var source = new FileSource("mypipeline.xml");
-var pipeline = (ETLOperation)new XMLWiringParser(source).getRoot();
+var pipeline = new XMLWiringParser<ETLOperation>(source).getRoot();
 
 pipeline.execute(datasource);
 ```
